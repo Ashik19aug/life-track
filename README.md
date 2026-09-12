@@ -65,3 +65,13 @@ npm run build
 ```
 
 `GET /api/health` performs a small Prisma `SELECT 1` query and returns a standard success response. If PostgreSQL is unavailable it returns a safe `503` response without connection details or stack traces.
+
+## Authentication
+
+LifeTrack uses Auth.js Credentials authentication with Argon2id password hashes. Sessions use Auth.js JWT cookies that are HTTP-only, `SameSite=Lax`, and secure in production. Tokens contain only safe identity claims; protected server layouts resolve the active user from PostgreSQL and reject disabled accounts.
+
+Create an account at `/register`, sign in at `/login`, and access `/dashboard`, `/profile`, `/profile/preferences`, and `/profile/security` after authentication. Registration creates the user, profile, and preferences in one database transaction. Email is intentionally read-only after registration; email verification and password recovery are not part of Phase 2.
+
+Set a distinct `AUTH_SECRET` of at least 32 characters in `.env` and `.env.example`. The lightweight in-memory rate limiter protects registration and password changes in a single app process; production multi-instance deployments should replace it with shared storage.
+
+Every future data query must derive ownership from the authenticated user and scope records by both resource id and `userId`. Never accept a client-provided `userId` as an authorization source.

@@ -1,6 +1,11 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/src/lib/auth/session";
+
 export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
+  if (await getCurrentUser()) redirect("/dashboard");
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-16 text-slate-950">
       <section className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm sm:p-12">
@@ -13,6 +18,20 @@ export default function Home() {
         <p className="mt-4 text-lg leading-8 text-slate-600">
           A secure foundation for your productivity, health, and lifestyle.
         </p>
+        <div className="mt-8 flex gap-3">
+          <Link
+            href="/login"
+            className="rounded-lg bg-emerald-700 px-4 py-2 font-medium text-white"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/register"
+            className="rounded-lg border border-slate-300 px-4 py-2 font-medium"
+          >
+            Create account
+          </Link>
+        </div>
         <div className="mt-10 rounded-xl bg-slate-50 p-5">
           <h2 className="text-sm font-semibold text-slate-900">System Status</h2>
           <dl className="mt-4 space-y-3 text-sm">

@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import { parseEnvironment } from "@/src/config/env";
 const validEnvironment = {
   APP_URL: "http://localhost:3000",
+  NEXTAUTH_URL: "http://localhost:3000",
   DATABASE_URL: "postgresql://user:pass@localhost:5432/lifetrack",
+  AUTH_SECRET: "a-secure-test-secret-that-is-long-enough",
 };
 describe("environment validation", () => {
   it("accepts required configuration", () =>

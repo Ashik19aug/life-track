@@ -14,3 +14,103 @@ model SystemHealth {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum Gender {
+  FEMALE
+  MALE
+  NON_BINARY
+  PREFER_NOT_TO_SAY
+  SELF_DESCRIBE
+}
+
+enum DateFormat {
+  YYYY_MM_DD
+  DD_MM_YYYY
+  MM_DD_YYYY
+}
+
+enum TimeFormat {
+  HOUR_12
+  HOUR_24
+}
+
+enum WeekStartsOn {
+  MONDAY
+  SUNDAY
+}
+
+enum WeightUnit {
+  KG
+  LB
+}
+
+enum HeightUnit {
+  CM
+  FT_IN
+}
+
+enum DistanceUnit {
+  KM
+  MI
+}
+
+enum TemperatureUnit {
+  CELSIUS
+  FAHRENHEIT
+}
+
+enum Theme {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+model User {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  passwordHash String
+  name         String?
+  status       UserStatus      @default(ACTIVE)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  profile      UserProfile?
+  preferences  UserPreference?
+}
+
+model UserProfile {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  firstName   String
+  lastName    String
+  displayName String?
+  dateOfBirth DateTime? @db.Date
+  gender      Gender?
+  bio         String?
+  avatarUrl   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPreference {
+  id              String          @id @default(cuid())
+  userId          String          @unique
+  timezone        String          @default("UTC")
+  dateFormat      DateFormat      @default(YYYY_MM_DD)
+  timeFormat      TimeFormat      @default(HOUR_24)
+  weekStartsOn    WeekStartsOn    @default(MONDAY)
+  weightUnit      WeightUnit      @default(KG)
+  heightUnit      HeightUnit      @default(CM)
+  distanceUnit    DistanceUnit    @default(KM)
+  temperatureUnit TemperatureUnit @default(CELSIUS)
+  theme           Theme           @default(SYSTEM)
+  language        String          @default("en")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

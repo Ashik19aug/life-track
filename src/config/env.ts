@@ -4,7 +4,9 @@ const environmentSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   APP_NAME: z.string().trim().min(1).default("LifeTrack"),
   APP_URL: z.url(),
+  NEXTAUTH_URL: z.url(),
   DATABASE_URL: z.string().url().startsWith("postgresql://"),
+  AUTH_SECRET: z.string().min(32),
 });
 
 export type Environment = z.infer<typeof environmentSchema>;
