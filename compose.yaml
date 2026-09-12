@@ -1,0 +1,36 @@
+services:
+  app:
+    container_name: lifetrack-app
+    build: .
+    command: ./docker/scripts/start-dev.sh
+    ports:
+      - "${LIFETRACK_APP_PORT:-3000}:3000"
+    env_file: [.env]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      WATCHPACK_POLLING: "true"
+    volumes:
+      - .:/app
+      - lifetrack_node_modules:/app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+  db:
+    container_name: lifetrack-db
+    image: postgres:17-alpine
+    env_file: [.env]
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - lifetrack_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    restart: unless-stopped
+volumes:
+  lifetrack_postgres_data:
+  lifetrack_node_modules:
